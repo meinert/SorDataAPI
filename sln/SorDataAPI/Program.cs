@@ -1,6 +1,9 @@
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
+builder.Services.AddControllers();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
@@ -17,10 +20,19 @@ if (app.Environment.IsDevelopment())
 
     // Configure app to use Swagger
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "SorDataAPI v1");
+        options.RoutePrefix = string.Empty; // Optional: Makes Swagger UI available at the root URL
+    });
 }
 
 app.UseHttpsRedirection();
+// app.UseAuthorization();
+
+
+// Map controllers to routes
+app.MapControllers();
 
 
 var summaries = new[]
