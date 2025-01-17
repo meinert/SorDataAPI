@@ -1,12 +1,12 @@
-namespace HealthcareAPI.Models
+namespace SorDataAPI.Models
 {
     public class Organization
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Region { get; set; }
-        public string SORCode { get; set; }
-        public string ParentSORCode { get; set; }
-        public string CVR { get; set; }
+        public required string Name { get; set; }
+        public required string Type { get; set; }
+        public required string Region { get; set; }
+        public required string SORCode { get; set; }
+        public required string ParentSORCode { get; set; }
+        public required string CVR { get; set; }
     }
 }

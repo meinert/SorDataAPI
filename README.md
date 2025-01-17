@@ -2,21 +2,25 @@
 
 This is a 
 
-Project features:
+**Project features**:
 - retrieves the sor.csv file from https://sor-filer.sundhedsdata.dk/sor_produktion/data/sor/sorcsv/V_1_2_1_19/sor.csv (hardcoded for now) if not already downloaded
 - Imports the data and saves it in memory, using a relevant hierarchial domain model
-- Exposes a REST interface with the following endPoints - documentation of the endPoints can be found in ([`Swagger`](https://localhost:5122/Swagger)).:
--- Lookup Endpoint
--- Traverse Endpoint
+- Exposes a REST interface with the following endPoints - documentation of the endPoints can be found in ([`Swagger`](https://localhost:5122/Swagger)):
 
-Future features:
+  - Lookup Endpoint
+  - Traverse Endpoint
+
+**Future features**:
 - TLS encryption of the endpoints
 - Authentication endpoint to get a Json-Web-Token (JWT)
+
+## Setting up and starting the application
 
 
 
 ## Project folder structure
 
+```
 src/
 ├── Controllers/         # API endpoints are defined here
 ├── Models/              # Data models and DTOs
@@ -31,10 +35,12 @@ src/
 ├── wwwroot/             # Static files (if serving static content)
 ├── Program.cs           # Main entry point of the application
 └── appsettings.json     # Application configuration
+```
 
 
 Notes for implementation....clean up before submitting
 
+```
 src/
 ├── Controllers/
 │   └── OrganizationController.cs
@@ -63,6 +69,7 @@ src/
 ├── wwwroot/
 ├── Program.cs
 └── appsettings.json
+```
 
 ## Branching strategy
 
