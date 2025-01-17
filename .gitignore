@@ -1,0 +1,8 @@
+# General
+bin/
+obj/
+
+# Build directories
+artifacts/
+out/
+Publish/

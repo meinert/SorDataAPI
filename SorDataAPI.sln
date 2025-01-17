@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SorDataAPI", "SorDataAPI.csproj", "{50243197-D70B-24CF-C38F-37A77F510AFF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50243197-D70B-24CF-C38F-37A77F510AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50243197-D70B-24CF-C38F-37A77F510AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50243197-D70B-24CF-C38F-37A77F510AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50243197-D70B-24CF-C38F-37A77F510AFF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B8E7F47D-EDE3-4253-9770-01F2B9943C94}
+	EndGlobalSection
+EndGlobal

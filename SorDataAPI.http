@@ -1,0 +1,6 @@
+@SorDataAPI_HostAddress = http://localhost:5211
+
+GET {{SorDataAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
