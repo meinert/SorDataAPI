@@ -1,0 +1,11 @@
+namespace SorDataAPI.Models
+{
+    /// <summary>
+    /// Dto used in <see cref="OrganizationDto"/> instead of reusing OrganizationDto to avoid over fetching data
+    /// </summary>
+    public class ChildOrganizationDto
+    {
+        public required string Name { get; set; }           // Enhedsnavn
+        public required string SorCode { get; set; }        // SOR-kode
+    }
+}

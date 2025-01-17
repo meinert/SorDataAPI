@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using SorDataAPI.Models;
-using SorDataAPI.Utilities;
-using System.Linq;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace SorDataAPI.Controllers
@@ -10,6 +8,13 @@ namespace SorDataAPI.Controllers
     [Route("api/[controller]")]
     public class OrganizationController : ControllerBase
     {
+        private readonly IOrganizationService _organizationService;
+
+        public OrganizationController(IOrganizationService organizationService)
+        {
+            _organizationService = organizationService;
+        }
+
         /// <summary>
         /// Gets an organization by its SOR code.
         /// </summary>
@@ -21,24 +26,27 @@ namespace SorDataAPI.Controllers
         [SwaggerResponse(404, "Organization not found")]
         public IActionResult GetOrganizationBySorCode(string sorCode)
         {
-            var organization = SeedData.GetTestData().FirstOrDefault(o => o.SorCode == sorCode);
-            if (organization == null)
-            {
-                return NotFound("Organization not found");
-            }
+            var organization = _organizationService.GetOrganizationBySorCode(sorCode);
+            if (organization == null) return NotFound("Organization not found");
 
-            var organizationDto = new OrganizationDto
-            {
-                Name = organization.Name,
-                Type = organization.Type,
-                Region = organization.Region,
-                Specialty = organization.Specialty,
-                SorCode = organization.SorCode,
-                ParentSorCode = organization.ParentSorCode,
-                Cvr = organization.Cvr
-            };
+            return Ok(organization);
+        }
 
-            return Ok(organizationDto);
+        /// <summary>
+        /// Gets a list of organizations for a region.
+        /// </summary>
+        /// <param name="region">The region.</param>
+        /// <returns>Returns the organizations details if found.</returns>
+        [HttpGet("{region}")]
+        [SwaggerOperation(Summary = "Get Organizations by Region", Description = "Fetches all organizations for a region.")]
+        [SwaggerResponse(200, "Organization(s) found", typeof(List<OrganizationDto>))]
+        [SwaggerResponse(404, "Organizations not found")]
+        public IActionResult GetOrganizationsByRegion(string region)
+        {
+            List<OrganizationDto> organizations = _organizationService.GetOrganizationsByRegion(region);
+            if (organizations == null) return NotFound("Region not found");
+
+            return Ok(organizations);
         }
     }
 }

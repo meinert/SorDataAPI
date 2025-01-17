@@ -9,6 +9,6 @@ namespace SorDataAPI.Models
         public required string SorCode { get; set; }        // SOR-kode
         public string? ParentSorCode { get; set; }          // Parent-SOR-kode
         public required string Cvr { get; set; }            // CVR
-        public List<string>? ChildOrganizations  { get; set; } // List of child SOR codes
+        public List<ChildOrganizationDto>? ChildOrganizations  { get; set; } // List of child SOR codes
     }
 }
