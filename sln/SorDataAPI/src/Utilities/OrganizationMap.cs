@@ -34,7 +34,7 @@ namespace SorDataAPI.Mappings
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error processing Enhedstype: {ex.Message}");
+                    Console.WriteLine($"Error processing Enhedstype: {ex.Message}"); // TODO: Consider how to handle "Enhedstyper" that are not in the TypeEnum
                     return TypeEnum.UKENDT;
                 }
             });
