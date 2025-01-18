@@ -13,6 +13,8 @@ This is a
 **Future features**:
 - TLS encryption of the endpoints
 - Authentication endpoint to get a Json-Web-Token (JWT)
+- Proper logging framework, e.g. Serilog instead of writing to console
+- Re-Download CSV if file already downloaded is old
 
 ## Setting up and starting the application
 
