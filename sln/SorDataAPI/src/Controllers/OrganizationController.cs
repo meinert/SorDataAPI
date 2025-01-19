@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SorDataAPI.Models;
+using SorDataAPI.Validators;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace SorDataAPI.Controllers
@@ -25,8 +26,9 @@ namespace SorDataAPI.Controllers
         /// <remarks>Fetches an organization based on its unique SOR code.</remarks>
         [HttpGet(GET_BY_SOR)]
         [SwaggerResponse(200, "Organization found", typeof(OrganizationDto))]
+        [SwaggerResponse(400, "Bad request")]
         [SwaggerResponse(404, "Organization not found")]
-        public ActionResult<OrganizationDto> GetOrganizationBySorCode(string sorCode)
+        public ActionResult<OrganizationDto> GetOrganizationBySorCode([SorCodeValidation] string sorCode)
         {
             var organization = _organizationService.GetOrganizationBySorCode(sorCode);
             if (organization == null) return NotFound("Organization not found");
@@ -43,8 +45,9 @@ namespace SorDataAPI.Controllers
         [HttpGet(TRAVERSE_BY_SOR)]
         [SwaggerResponse(200, "Organization found", typeof(OrganizationDto))]
         [SwaggerResponse(204, "Invalid operation")]
+        [SwaggerResponse(400, "Bad request")]
         [SwaggerResponse(404, "Organization not found")]
-        public ActionResult<OrganizationDto> GetTopLevelParent(string sorCode)
+        public ActionResult<OrganizationDto> GetTopLevelParent([SorCodeValidation] string sorCode)
         {
             try {
                 var parentOrganization = _organizationService.GetTopLevelParentBySorCode(sorCode);
