@@ -2,9 +2,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using SorDataAPI.Mappings;
 using SorDataAPI.Models;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 
 namespace SorDataAPI.Utils
 {

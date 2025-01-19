@@ -1,5 +1,4 @@
 using SorDataAPI.Models;
-using SorDataAPI.Utilities;
 
 public class OrganizationService : IOrganizationService
 {
@@ -8,59 +7,77 @@ public class OrganizationService : IOrganizationService
 
     public OrganizationService(IOrganizationDataProvider dataProvider)
     {
-        _dataProvider = dataProvider;
-        _organizationList = _dataProvider.GetOrganizations().ToList();
-    }
+        _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
 
-    // Method to initialize the data (set organizations after parsing)
-    public void InitializeData(IEnumerable<Organization> organizations)
-    {
-        _dataProvider.SetOrganizations(organizations);
-        _organizationList = _dataProvider.GetOrganizations().ToList();
+        var organizations = _dataProvider.GetOrganizations()
+        ?? throw new ArgumentException("No organizations found in data provider");
+
+        _organizationList = [.. organizations];
     }
 
     public OrganizationDto? GetOrganizationBySorCode(string sorCode)
     {
-        var organization = _organizationList.FirstOrDefault(o => o.SorCode == sorCode);
-        if (organization == null) return null;
-
-        return new OrganizationDto
-        {
-            Name = organization.Name,
-            Type = organization.Type,
-            Region = organization.Region,
-            Specialty = organization.Specialty,
-            SorCode = organization.SorCode,
-            Cvr = organization.Cvr,
-            ParentSorCode = organization.ParentSorCode,
-            ChildOrganizations = [.. _organizationList
-                .Where(o => o.ParentSorCode == sorCode)
-                .Select(c => new ChildOrganizationDto { SorCode = c.SorCode, Name = c.Name })]
-        };
+        Organization? organization = _organizationList.FirstOrDefault(o => o.SorCode == sorCode);
+        return buildOrganizationDto(organization);
     }
 
-    public Organization? GetTopLevelParentBySorCode(string sorCode)
+    public OrganizationDto? GetTopLevelParentBySorCode(string sorCode)
     {
-        List<Organization> organization = _organizationList.FindAll(o => o.SorCode == sorCode);
-
-        if (organization.Count != 1) return null;
-        
-        if (organization == null) return null;
-
-        Organization parent_organization = organization[0];
-
-        // Traverse upwards until we reach the top-level parent
-        while (parent_organization.ParentSorCode != "")
+        List<Organization> organizationsBySorCode = _organizationList.FindAll(o => o.SorCode == sorCode);
+        if (organizationsBySorCode == null)
         {
-            parent_organization = _organizationList.FirstOrDefault(o => o.SorCode == parent_organization.ParentSorCode);
-            if (parent_organization == null)
-                break; // If no parent is found, exit the loop
+            return null;
+        }
+        else if (organizationsBySorCode.Count != 1)
+        {
+            Console.WriteLine("More than one organization found with the SOR code: " + sorCode);
+            return null;
         }
 
-        return parent_organization; // This will be the top-level parent
+        Organization organization = organizationsBySorCode.First();       
+        Organization? topParentOrganization = FindTopParentOrganization(organization);
+
+        return buildOrganizationDto(topParentOrganization);
     }
+
     public List<OrganizationDto> GetOrganizationsByRegion(string region)
     {
         throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Builds an OrganizationDto from an Organization and its child organizations.
+    /// </summary>
+    /// <param name="organization">Organization to build the OrganizationDto from</param>
+    /// <returns>OrganizationDto. Otherwise null if the organization is null</returns>
+    private OrganizationDto? buildOrganizationDto(Organization? organization)
+    {
+        if (organization == null)
+            return null;
+
+        // Find all child organizations for the given organization and construct the OrganizationDto
+        List<Organization> childOrganizations = _organizationList.FindAll(o => o.ParentSorCode == organization.SorCode);
+        return OrganizationDto.FromOrganization(organization, childOrganizations);
+    }
+
+    /// <summary>
+    /// Recursively finds the top parent organization for the given organization.
+    /// </summary>
+    /// <param name="organization">Organization to find the top parent for</param>
+    /// <returns>Top parent organization. Otherwise null if an organization could not be found</returns>
+    private Organization? FindTopParentOrganization(Organization organization)
+    {
+        string? parentSorCode = organization.ParentSorCode;
+        // The top parent organization is found
+        if (string.IsNullOrEmpty(parentSorCode)) return organization;
+
+        Organization? parentOrganization = _organizationList.FirstOrDefault(o => o.SorCode == parentSorCode);
+        if (parentOrganization == null)
+        {
+            Console.WriteLine("Parent organization not found for SOR code: " + parentSorCode);
+            return null;
+        }
+
+        return FindTopParentOrganization(parentOrganization);
     }
 }

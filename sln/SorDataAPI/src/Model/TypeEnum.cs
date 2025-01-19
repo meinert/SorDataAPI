@@ -1,3 +1,6 @@
+/// <summary>
+/// Represents the "Enhedstype" for an organization.
+/// </summary>
 public enum TypeEnum
 {
     PRIVAT,

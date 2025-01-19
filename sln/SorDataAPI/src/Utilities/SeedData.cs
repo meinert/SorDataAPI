@@ -1,15 +1,16 @@
 using SorDataAPI.Models;
-using System.Collections.Generic;
 
 namespace SorDataAPI.Utilities
 {
+    /// <summary>
+    /// Used for testing
+    /// </summary>
     public static class SeedData
     {
         public static List<Organization> GetTestData()
         {
-            TypeEnum typeEnum;
-            return new List<Organization>
-            {
+            return
+            [
                 new Organization
                 {
                     Name = "Organization A",
@@ -50,7 +51,7 @@ namespace SorDataAPI.Utilities
                     ParentSorCode = null,
                     Cvr = "2234567890"
                 }
-            };
+            ];
         }
     }
 }

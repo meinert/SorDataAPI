@@ -1,4 +1,4 @@
-using SorDataAPI.Utils;
+using static StartupHelper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +11,14 @@ builder.Services.AddSingleton<IOrganizationDataProvider, CsvOrganizationDataProv
 // Swagger and OpenAPI
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+
+// Add Swagger services and include XML comments.
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
+});
 
 var app = builder.Build();
 
@@ -27,41 +35,3 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
-
-/// <summary>
-/// Ensures the CSV file is downloaded and parsed into the application.
-/// </summary>
-async Task EnsureCsvDataAsync(IServiceProvider services)
-{
-    // Ensure CSV file is downloaded
-    await CsvFileRetriever.EnsureCsvFileAsync();
-
-    // Parse the CSV file
-    string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "sor.csv");
-    var organizations = CsvParser.ParseCsvFile(filePath);
-
-    // Output the number of organizations parsed (for debugging purposes)
-    Console.WriteLine($"Parsed {organizations.Count()} organizations from the CSV file.");
-
-    // Get the scoped data provider and set the organizations
-    var dataProvider = services.GetRequiredService<IOrganizationDataProvider>();
-    dataProvider.SetOrganizations(organizations);
-
-}
-
-/// <summary>
-/// Configures Swagger UI for development environments.
-/// </summary>
-void ConfigureSwagger(WebApplication app)
-{
-    app.MapOpenApi();
-    // app.MapGet("/", () => "Hello world! Made by Peter Fjordbak Poulsen");
-
-    // Configure Swagger UI
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "SorDataAPI v1");
-        options.RoutePrefix = string.Empty; // Swagger UI available at the root URL
-    });
-}

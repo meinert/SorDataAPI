@@ -7,5 +7,17 @@ namespace SorDataAPI.Models
     {
         public required string Name { get; set; }           // Enhedsnavn
         public required string SorCode { get; set; }        // SOR-kode
+
+        /// <summary>
+        /// Static factory method to create a ChildOrganizationDto from an Organization.
+        /// </summary>
+        public static ChildOrganizationDto FromOrganization(Organization organization)
+        {
+            return new ChildOrganizationDto
+            {
+                Name = organization.Name,
+                SorCode = organization.SorCode
+            };
+        }
     }
 }

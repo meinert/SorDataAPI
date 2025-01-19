@@ -1,6 +1,5 @@
 using CsvHelper.Configuration;
 using SorDataAPI.Models;
-using System;
 using System.Text.RegularExpressions;
 
 namespace SorDataAPI.Mappings
@@ -17,27 +16,7 @@ namespace SorDataAPI.Mappings
         {
             // Map each CSV column to the corresponding property in the Organization object
             Map(m => m.Name).Name("Enhedsnavn");
-            Map(m => m.Type).Name("Enhedstype").Convert(args =>
-            {
-                try
-                {
-                    // Ensure the Value and Row exist before accessing
-                    if (args.Row == null || args.Row[1] == null)
-                    {
-                        Console.WriteLine("Type field is missing or empty.");
-                        return TypeEnum.UKENDT;
-                    }
-
-                    // Getting the column with index 1 from the data
-                    string rawValue = args.Row[1]!;
-                    return castToEnum<TypeEnum>(rawValue);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error processing Enhedstype: {ex.Message}"); // TODO: Consider how to handle "Enhedstyper" that are not in the TypeEnum
-                    return TypeEnum.UKENDT;
-                }
-            });
+            Map(m => m.Type).Name("Enhedstype").Convert(args => mapToEnhedsType(args));
             Map(m => m.Region).Name("P_Region"); // TODO: Consider mapping this and others to an enum
             Map(m => m.Specialty).Name("Hovedspeciale");
             Map(m => m.SorCode).Name("SOR-kode");
@@ -46,12 +25,38 @@ namespace SorDataAPI.Mappings
         }
 
         /// <summary>
+        /// Method to map the "enhedstype" to the TypeEnum. If no match is found, TypeEnum.UKENDT is returned
+        /// </summary>
+        public TypeEnum mapToEnhedsType(CsvHelper.ConvertFromStringArgs args)
+        {
+            try
+            {
+                // Ensure the Value and Row exist before accessing
+                if (args.Row == null || args.Row[1] == null)
+                {
+                    Console.WriteLine("Type field is missing or empty.");
+                    return TypeEnum.UKENDT;
+                }
+
+                // Getting the column with index 1 from the data
+                string rawValue = args.Row[1]!;
+                return castToEnum<TypeEnum>(rawValue);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing Enhedstype: {ex.Message}"); // TODO: Consider how to handle "Enhedstyper" that are not in the TypeEnum
+                return TypeEnum.UKENDT;
+            }
+        }
+
+        /// <summary>
         /// Method to cast to an enum of generic type T. The string value is converted to upper cases and sanitized for chars that cannot be used in Enum
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="rawValue"></param>
         /// <returns></returns>
-        public T castToEnum<T>(string rawValue) {
+        public T castToEnum<T>(string rawValue)
+        {
             if (string.IsNullOrWhiteSpace(rawValue))
                 throw new ArgumentException("Input cannot be null or empty.", nameof(rawValue));
 
@@ -69,7 +74,7 @@ namespace SorDataAPI.Mappings
             {
                 sanitized = "_" + sanitized;
             }
-            return (T) Enum.Parse(typeof(T), sanitized.ToUpperInvariant());
+            return (T)Enum.Parse(typeof(T), sanitized.ToUpperInvariant());
         }
     }
 }

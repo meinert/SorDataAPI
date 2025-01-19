@@ -1,36 +1,32 @@
-using System.Buffers.Text;
 using Microsoft.AspNetCore.Mvc;
 using SorDataAPI.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace SorDataAPI.Controllers
 {
+    /// <summary>
+    /// API for managing organizations and hierarchy traversal.
+    /// </summary>
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class OrganizationController : ControllerBase
+    public class OrganizationController(IOrganizationService organizationService) : ControllerBase
     {
         private const string GET_BY_SOR = "sor/{sorCode}";
         private const string TRAVERSE_BY_SOR = "sor/traverse/{sorCode}";
         private const string GET_BY_REGION = "region/{region}";
 
-
-        private readonly IOrganizationService _organizationService;
-
-        public OrganizationController(IOrganizationService organizationService)
-        {
-            _organizationService = organizationService;
-        }
+        private readonly IOrganizationService _organizationService = organizationService;
 
         /// <summary>
         /// Gets an organization by its SOR code.
         /// </summary>
         /// <param name="sorCode">The unique SOR code of the organization.</param>
         /// <returns>Returns the organization details if found.</returns>
+        /// <remarks>Fetches an organization based on its unique SOR code.</remarks>
         [HttpGet(GET_BY_SOR)]
-        [SwaggerOperation(Summary = "Get Organization by SOR Code", Description = "Fetches an organization based on its unique SOR code.")]
         [SwaggerResponse(200, "Organization found", typeof(OrganizationDto))]
         [SwaggerResponse(404, "Organization not found")]
-        public ActionResult<Organization> GetOrganizationBySorCode(string sorCode)
+        public ActionResult<OrganizationDto> GetOrganizationBySorCode(string sorCode)
         {
             var organization = _organizationService.GetOrganizationBySorCode(sorCode);
             if (organization == null) return NotFound("Organization not found");
@@ -43,17 +39,32 @@ namespace SorDataAPI.Controllers
         /// </summary>
         /// <param name="sorCode">The SOR code of the organization to start the traversal.</param>
         /// <returns>The top-level parent organization.</returns>
+        /// <remarks>Fetches the top level parent organization based on a SOR code.</remarks>
         [HttpGet(TRAVERSE_BY_SOR)]
-        public ActionResult<Organization> GetTopLevelParent(string sorCode)
+        [SwaggerResponse(200, "Organization found", typeof(OrganizationDto))]
+        [SwaggerResponse(204, "Invalid operation")]
+        [SwaggerResponse(404, "Organization not found")]
+        public ActionResult<OrganizationDto> GetTopLevelParent(string sorCode)
         {
-            var parentOrganization = _organizationService.GetTopLevelParentBySorCode(sorCode);
+            try {
+                var parentOrganization = _organizationService.GetTopLevelParentBySorCode(sorCode);
 
-            if (parentOrganization == null)
-            {
-                return NotFound($"Organization with SOR code {sorCode} not found.");
+                if (parentOrganization == null)
+                {
+                    return NotFound($"Organization with SOR code {sorCode} not found.");
+                }
+
+                return Ok(parentOrganization);
             }
-
-            return Ok(parentOrganization);
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(204, $"Invalid operation: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Catch other general exceptions
+                return StatusCode(500, "Internal Server Error: " + ex.Message);
+            }
         }
 
         /// <summary>
@@ -61,14 +72,12 @@ namespace SorDataAPI.Controllers
         /// </summary>
         /// <param name="region">The region.</param>
         /// <returns>Returns the organizations details if found.</returns>
-        /// <remarks>
-        /// This method is not yet implemented. It will be implemented in a future release.
-        /// </remarks>
+        /// <remarks> Fetches all organizations for a region. /n/n This method is not yet implemented. It will be implemented in a future release. </remarks>
         [HttpGet(GET_BY_REGION)]
-        [SwaggerOperation(Summary = "Get Organizations by Region", Description = "Fetches all organizations for a region.")]
         [SwaggerResponse(200, "Organization(s) found", typeof(List<OrganizationDto>))]
-        [SwaggerResponse(404, "Organizations not found")]
-        public ActionResult<Organization> GetOrganizationsByRegion(string region)
+        [SwaggerResponse(501, "Internal Server Error")]
+        [SwaggerResponse(500, "Not Implemented")]
+        public ActionResult<OrganizationDto> GetOrganizationsByRegion(string region)
         {
             try
             {
