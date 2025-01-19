@@ -25,6 +25,8 @@ public static class StartupHelper
     {
         app.MapOpenApi();
 
+        app.MapGet("/easteregg", () => "Made by Peter Fjordbak Poulsen on his 45'th birthday");
+
         app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
